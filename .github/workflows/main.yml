@@ -26,8 +26,9 @@ jobs:
       - uses: actions/checkout@v2
         name: Pull FoundationDB source code
         with:
-          repository: 'apple/foundationdb'
-
+          repository: 'mpilman/foundationdb '
+          ref: features/windows-docker
+       
       # Build the docker build image
       - uses: mr-smithers-excellent/docker-build-push@v5.3
         name: Build & push Docker image
