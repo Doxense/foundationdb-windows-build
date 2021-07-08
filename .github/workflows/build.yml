@@ -6,9 +6,6 @@ name: Windows Build 7.0
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Docker image tag'
-        required: true
       source_repository:
         description: 'Source repository to use'
         required: true
