@@ -35,5 +35,6 @@ jobs:
       - name: Run Build
         shell: pwsh
         run: |
+          md .\artefacts
           cd .\build
-          .\build.ps1 -BuildDir ..\output
+          .\build.ps1 -BuildDir ..\artefacts
