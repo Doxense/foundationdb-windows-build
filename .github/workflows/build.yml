@@ -14,6 +14,12 @@ on:
         description: 'Branch in source repository'
         required: true
         default: windows-docker-build-7.0
+      cpus:
+        description: 'Number of cpu cores'
+        default: '2'
+      memory:
+        description: 'Total memory size (in bytes)'
+        default: '8000000000'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -37,4 +43,4 @@ jobs:
         run: |
           md .\artefacts
           cd .\build
-          .\build.ps1 -BuildDir ..\artefacts
+          .\build.ps1 -BuildDir ..\artefacts -Cpus ${{ github.event.inputs.cpus }} -Memory ${{ github.event.inputs.memory }}
