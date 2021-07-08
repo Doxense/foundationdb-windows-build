@@ -41,6 +41,15 @@ jobs:
       - name: Run Build
         shell: powershell
         run: |
-          md .\artefacts
+          md .\artifacts
           cd .\build
-          .\build.ps1 -BuildDir ..\artefacts -Cpus ${{ github.event.inputs.cpus }} -Memory ${{ github.event.inputs.memory }}
+          .\build.ps1 -BuildDir ..\artifacts -Cpus ${{ github.event.inputs.cpus }} -Memory ${{ github.event.inputs.memory }}
+          
+      - uses: actions/upload-artifact@v2
+        name: Publish Artifacts
+        with:
+          name: build-artifacts
+          path: artifacts/
+          
+          
+        
