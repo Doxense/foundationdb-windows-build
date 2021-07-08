@@ -39,7 +39,7 @@ jobs:
           
       # Runs a single command using the runners shell
       - name: Run Build
-        shell: pwsh
+        shell: powershell
         run: |
           md .\artefacts
           cd .\build
