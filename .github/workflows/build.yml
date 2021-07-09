@@ -49,7 +49,7 @@ jobs:
         name: Publish Artifacts
         with:
           name: ${{ github.run_number }}
-          path: ${{ github.workspace }}/artifacts
+          path: ${{ github.workspace }}/artifacts/packages
           
           
         
