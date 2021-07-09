@@ -48,8 +48,13 @@ jobs:
       - uses: actions/upload-artifact@v2
         name: Publish Artifacts
         with:
-          name: ${{ github.run_number }}
+          name: binaries_${{ github.run_number }}
           path: ${{ github.workspace }}/artifacts/packages
           
+      - uses: actions/upload-artifact@v2
+        name: Publish MSI
+        with:
+          name: setup_${{ github.run_number }}
+          path: ${{ github.workspace }}/artifacts/packages/*.msi
           
         
