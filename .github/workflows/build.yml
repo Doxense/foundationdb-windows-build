@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Windows Build 7.0
+name: Windows Release Build
 
 # Controls when the workflow will run
 on:
@@ -9,11 +9,11 @@ on:
       source_repository:
         description: 'Source repository to use'
         required: true
-        default: 'krzysfr/foundationdb'
+        default: 'apple/foundationdb'
       source_branch:
         description: 'Branch in source repository'
         required: true
-        default: windows-docker-build-7.0
+        default: master
       cpus:
         description: 'Number of cpu cores'
         default: '16'
@@ -48,13 +48,13 @@ jobs:
       - uses: actions/upload-artifact@v2
         name: Publish Artifacts
         with:
-          name: binaries_${{ github.run_number }}
+          name: ${{ github.event.inputs.source_branch }}_binaries_${{ github.run_number }}
           path: ${{ github.workspace }}/artifacts/packages
           
       - uses: actions/upload-artifact@v2
         name: Publish MSI
         with:
-          name: setup_${{ github.run_number }}
+          name: ${{ github.event.inputs.source_branch }}_setup_${{ github.run_number }}
           path: ${{ github.workspace }}/artifacts/packages/*.msi
           
         
