@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Windows Build Image
+name: Windows Docker Build Image
 
 # Controls when the action will run. 
 on:
