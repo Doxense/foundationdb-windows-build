@@ -16,10 +16,10 @@ on:
         default: windows-docker-build-7.0
       cpus:
         description: 'Number of cpu cores'
-        default: '2'
+        default: '16'
       memory:
         description: 'Total memory size (in bytes)'
-        default: '8000000000'
+        default: '32000000000'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -48,8 +48,8 @@ jobs:
       - uses: actions/upload-artifact@v2
         name: Publish Artifacts
         with:
-          name: build-artifacts
-          path: artifacts/
+          name: ${{ github.run_number }}
+          path: ${{ github.workspace }}/artifacts
           
           
         
