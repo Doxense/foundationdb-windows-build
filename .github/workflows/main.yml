@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Windows Docker Build Image
+name: Generate Windows Docker Build Image
 
 # Controls when the action will run. 
 on:
@@ -13,11 +13,11 @@ on:
       source_repository:
         description: 'Source repository to use'
         required: true
-        default: 'mpilman/foundationdb'
+        default: 'apple/foundationdb'
       source_branch:
         description: 'Branch in source repository'
         required: true
-        default: features/windows-docker
+        default: master
       target_image:
         description: 'Target image name'
         required: true
