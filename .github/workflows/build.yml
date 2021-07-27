@@ -14,6 +14,14 @@ on:
         description: 'Branch in source repository'
         required: true
         default: master
+      build_repository:
+        description: 'Build repository to use'
+        required: true
+        default: 'foundationdb/foundationdb-build-support'
+      build_branch:
+        description: 'Branch in build repository'
+        required: true
+        default: main
       cpus:
         description: 'Number of cpu cores'
         default: '16'
@@ -30,20 +38,29 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checkout the source repository
       - uses: actions/checkout@v2
         name: Pull FoundationDB source code
         with:
           repository: ${{ github.event.inputs.source_repository }}
           ref: ${{ github.event.inputs.source_branch }}
+          path: source
+
+      # Checkout the build repository
+      - uses: actions/checkout@v2
+        name: Pull FoundationDB build support code
+        with:
+          repository: ${{ github.event.inputs.build_repository }}
+          ref: ${{ github.event.inputs.build_branch }}
+          path: build
           
       # Runs a single command using the runners shell
       - name: Run Build
         shell: powershell
         run: |
           md .\artifacts
-          cd .\build
-          .\build.ps1 -BuildDir ..\artifacts -Cpus ${{ github.event.inputs.cpus }} -Memory ${{ github.event.inputs.memory }}
+          cd .\build\docker\windows
+          .\build.ps1 -SourceDir ..\..\..\source -BuildDir ..\..\..\artifacts -Cpus ${{ github.event.inputs.cpus }} -Memory ${{ github.event.inputs.memory }}
           
       - uses: actions/upload-artifact@v2
         name: Publish Artifacts
