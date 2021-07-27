@@ -39,8 +39,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     
-      # Cleanup the entire work folder
-      - uses: AutoModality/action-clean@v1    
+      # Cleanup workspace to discard any artifact from previous runs
+      - name: Cleanup workspace
+        shell: powershell
+        run: |
+          Remove-Item -Recurse -Force .\artifacts -ErrorAction Ignore
       
       # Checkout the source repository
       - uses: actions/checkout@v2
