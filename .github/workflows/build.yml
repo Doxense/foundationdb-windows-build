@@ -66,19 +66,13 @@ jobs:
         shell: powershell
         run: |
           md .\artifacts
-          cd .\build\docker\windows
-          .\build.ps1 -SourceDir ..\..\..\source -BuildDir ..\..\..\artifacts -Cpus ${{ github.event.inputs.cpus }} -Memory ${{ github.event.inputs.memory }}
+          cd .\build\docker\windows\build
+          .\build.ps1 -SourceDir ..\..\..\..\source -BuildDir ..\..\..\..\artifacts -Cpus ${{ github.event.inputs.cpus }} -Memory ${{ github.event.inputs.memory }}
           
       - uses: actions/upload-artifact@v2
         name: Publish Artifacts
         with:
           name: ${{ github.event.inputs.source_branch }}_binaries_${{ github.run_number }}
           path: ${{ github.workspace }}/artifacts/packages
-          
-      - uses: actions/upload-artifact@v2
-        name: Publish MSI
-        with:
-          name: ${{ github.event.inputs.source_branch }}_setup_${{ github.run_number }}
-          path: ${{ github.workspace }}/artifacts/packages/*.msi
           
         
