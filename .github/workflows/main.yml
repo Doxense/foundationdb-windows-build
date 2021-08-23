@@ -13,7 +13,7 @@ on:
       source_repository:
         description: 'Source repository to use'
         required: true
-        default: 'apple/foundationdb'
+        default: 'foundationdb/fdb-build-support'
       source_branch:
         description: 'Branch in source repository'
         required: true
@@ -50,6 +50,6 @@ jobs:
           image: ${{ github.event.inputs.target_image }}
           registry: ${{ github.event.inputs.target_registry }}
           tags: ${{ github.event.inputs.tag }}, latest
-          dockerfile: ./build/Dockerfile.windows
+          dockerfile: ./docker/windows/build/Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
