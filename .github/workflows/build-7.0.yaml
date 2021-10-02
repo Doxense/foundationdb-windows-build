@@ -79,5 +79,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         name: Publish Artifacts
         with:
-          name: ${{ github.event.inputs.source_branch }}_7_0_binaries_${{ github.run_number }}
+          name: ${{ github.event.inputs.source_branch }}_7_0_setup_${{ github.run_number }}
           path: ${{ github.workspace }}/artifacts/packages
