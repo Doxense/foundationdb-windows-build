@@ -175,7 +175,7 @@ foreach($PR in $PullRequests) {
     Run -Command "gh pr checkout $($PR.Id)"
     $LastModified = git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S
     $CurrentTime = (Get-Date).ToString("yyyy-MM-ddThh:mm:ss")
-    if((New-TimeSpan -Start $LastModified -End $CurrentTime).Days -eq 1){
+    if((New-TimeSpan -Start $LastModified -End $CurrentTime).Days -eq 0){
         $RecentPRs.Add($PR)
     }
 }
@@ -194,7 +194,7 @@ if($global:PRsSlackText.Length -eq 0){
 
 $SlackMessageTemplate = "$BuildDir\sources\skack_message_template.json"
 $SlackMessage = Get-Content $SlackMessageTemplate
-$global:MainSlackText = $global:MainSlackText -replace "master", "master        "
+$global:MainSlackText = $global:MainSlackText -replace "master", "master       "
 $SlackMessage = $SlackMessage -replace "main-text", $global:MainSlackText
 $SlackMessage = $SlackMessage -replace "pr-text", $global:PRsSlackText
 $SlackMessage = $SlackMessage -replace "log-text", "Build logs available <$global:LogPath|here> for 90 days"
