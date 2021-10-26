@@ -98,10 +98,10 @@ function BuildPRs{
     $global:BranchLogFile = "$global:LogDir\$LogFileName"
     try{
         Build
-        $global:PRsSlackText = "$global:PRsSlackText\u2714   <$PRPath/$($PR.Id)|#$($PR.Id)> (``<$CommitPath/$CommitId|$SubCommitId>``): $($PR.Title)\n          Result:   *SUCCEEDED*\n"
+        $global:PRsSlackText = "$global:PRsSlackText\u2714   <$PRPath/$($PR.Id)|#$($PR.Id)> (``<$CommitPath/$CommitId|$SubCommitId>``): $($PR.Title)\n"
     }
     catch{
-        $global:PRsSlackText = "$global:PRsSlackText\u274C   <$PRPath/$($PR.Id)|#$($PR.Id)> (``<$CommitPath/$CommitId|$SubCommitId>``): $($PR.Title)\n          Result:   *FAILED*\n"
+        $global:PRsSlackText = "$global:PRsSlackText\u274C   <$PRPath/$($PR.Id)|#$($PR.Id)> (``<$CommitPath/$CommitId|$SubCommitId>``): $($PR.Title)\n"
     }
     $global:LogFile = $global:MainLogFile
 }
