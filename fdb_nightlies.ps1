@@ -21,15 +21,20 @@ function TraceLine {
     
 function Run {
     param(
+        [switch]$SkipErrors = $false,
         [Parameter(Mandatory = $true)][string]$Command
     )
     
-    TraceLine -Line "Runnning command: $Command"
+    TraceLine "Runnning command: $Command"
     Invoke-Expression -Command "$Command" 2>&1 | Out-File -Append -FilePath $LogFile
     if($LASTEXITCODE -ne 0){
         TraceLine "Command failed with code: $LASTEXITCODE"
         $global:SubcommandFailed = $true
-        throw "Command failed with code: $LASTEXITCODE"
+        if(SkipErrors){
+            TraceLine "Command failure ignored"
+        }else {
+            throw "Command failed with code: $LASTEXITCODE"            
+        }
     }
 }
     
@@ -38,7 +43,7 @@ function RunPS {
         [Parameter(Mandatory = $true)][string]$Command
     )
     
-    TraceLine -Line "Runnning command: $Command"
+    TraceLine "Runnning command: $Command"
     Invoke-Expression -Command "$Command 2>&1 | Out-File -Append -FilePath $LogFile"
     if(!$?){
         TraceLine "PS Command failed"
@@ -60,7 +65,7 @@ function BuildMainBranch{
     Run -Command "git pull"
     $CommitId = git log --format="%H" -n 1
     $SubCommitId = $CommitId.Substring(0,6)
-    TraceLine -Line "Commit id: $CommitId"
+    TraceLine "Commit id: $CommitId"
     $global:BranchLogFile = "$global:LogDir\$LogFileName"
     try{
         Build
@@ -93,7 +98,7 @@ function BuildPRs{
     #gh pr checkout $PR.Id
     $CommitId = git log --format="%H" -n 1
     $SubCommitId = $CommitId.Substring(0,6)
-    TraceLine -Line "Commit id: $CommitId"
+    TraceLine "Commit id: $CommitId"
     
     $global:BranchLogFile = "$global:LogDir\$LogFileName"
     try{
@@ -172,16 +177,16 @@ foreach($PR in $PRsList){
 
 $RecentPRs = New-Object Collections.Generic.List[PullRequest]
 foreach($PR in $PullRequests) {
-    Run -Command "gh pr checkout $($PR.Id)"
+    Run -Command "gh pr checkout $($PR.Id)" -SkipErrors
     $LastModified = git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S
     $CurrentTime = (Get-Date).ToString("yyyy-MM-ddThh:mm:ss")
     if((New-TimeSpan -Start $LastModified -End $CurrentTime).Days -eq 0){
         $RecentPRs.Add($PR)
     }
 }
-TraceLine -Line "Building the folowing pull requests"
+TraceLine  "Building the folowing pull requests"
 foreach($PR in $RecentPRs){
-    TraceLine -Line "$($PR.Id): $($PR.Title)"
+    TraceLine "$($PR.Id): $($PR.Title)"
 }
 
 foreach($PR in $RecentPRs){
@@ -198,7 +203,7 @@ $global:MainSlackText = $global:MainSlackText -replace "master", "master       "
 $SlackMessage = $SlackMessage -replace "main-text", $global:MainSlackText
 $SlackMessage = $SlackMessage -replace "pr-text", $global:PRsSlackText
 $SlackMessage = $SlackMessage -replace "log-text", "Build logs available <$global:LogPath|here> for 90 days"
-TraceLine -Line [string]$SlackMessage
+TraceLine [string]$SlackMessage
 
 # Post build results to Slack
 $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
