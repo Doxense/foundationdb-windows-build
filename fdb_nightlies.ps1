@@ -30,7 +30,7 @@ function Run {
     if($LASTEXITCODE -ne 0){
         TraceLine "Command failed with code: $LASTEXITCODE"
         $global:SubcommandFailed = $true
-        if(SkipErrors){
+        if($SkipErrors){
             TraceLine "Command failure ignored"
         }else {
             throw "Command failed with code: $LASTEXITCODE"            
