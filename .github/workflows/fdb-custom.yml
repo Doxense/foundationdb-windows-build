@@ -32,7 +32,7 @@ jobs:
         shell: cmd
         run : |
           cd .\build
-          powershell.exe -File .\sources\fdb_custom.ps1 -RunId ${{github.run_id}} -SlackPath "${{ secrets.SLACK_PATH }}" -PR "${{ github.event.inputs.pr_number }}"
+          powershell.exe -File .\sources\fdb_custom.ps1 -RunId ${{github.run_id}} -SlackPath "${{ secrets.SLACK_PATH }}" -PullRequest "${{ github.event.inputs.pr_number }}"
         
       # Publish build logs
       - uses: actions/upload-artifact@v2
