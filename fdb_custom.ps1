@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$RunId,
-    [Parameter(Mandatory = $true)][string]$SlackPath   
+    [Parameter(Mandatory = $true)][string]$SlackPath,
+    [Parameter(Mandatory = $true)][string]$PullRequest
 )
 
 class PullRequest{
@@ -151,9 +152,9 @@ If ((Get-FileHash $BuildDir\boost_1_76_0.7z).Hash -ne "88782714F8701B6965F3FCE08
 Run -Command "7z x -y $BuildDir\boost_1_76_0.7z"
 
 # Build main branches
-BuildMainBranch -Branch master
-BuildMainBranch -Branch release-7.0
-BuildMainBranch -Branch release-6.3
+# BuildMainBranch -Branch master
+# BuildMainBranch -Branch release-7.0
+# BuildMainBranch -Branch release-6.3
 
 # Build pull requests
 RunPS -Command "Set-Location $global:BuildDir"
@@ -177,10 +178,7 @@ foreach($PR in $PRsList){
 
 $RecentPRs = New-Object Collections.Generic.List[PullRequest]
 foreach($PR in $PullRequests) {
-    Run -Command "gh pr checkout $($PR.Id)" -SkipErrors
-    $LastModified = git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S
-    $CurrentTime = (Get-Date).ToString("yyyy-MM-ddThh:mm:ss")
-    if((New-TimeSpan -Start $LastModified -End $CurrentTime).Days -eq 0){
+    if($PR.Id -eq $PullRequest){
         $RecentPRs.Add($PR)
     }
 }
@@ -203,12 +201,12 @@ $global:MainSlackText = $global:MainSlackText -replace "master", "master       "
 $SlackMessage = $SlackMessage -replace "main-text", $global:MainSlackText
 $SlackMessage = $SlackMessage -replace "pr-text", $global:PRsSlackText
 $SlackMessage = $SlackMessage -replace "log-text", "Build logs available <$global:LogPath|here> for 90 days"
-TraceLine [string]$SlackMessage
+Write-Output [string]$SlackMessage
 
 # Post build results to Slack
 $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
 $headers.Add("Content-Type", "application/json")
-RunPS -Command "Invoke-RestMethod `$SlackPath -Method 'POST' -Headers `$headers -Body `$SlackMessage"
+#RunPS -Command "Invoke-RestMethod `$SlackPath -Method 'POST' -Headers `$headers -Body `$SlackMessage"
 RunPS -Command "Set-Location ""$BuildDir"""
 
 if($SubcommandFailed){
