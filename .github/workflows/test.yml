@@ -24,4 +24,4 @@ jobs:
         package: ${{ fromJson(needs.publish.outputs.matrix) }}
     steps:
       - id: use_output
-        run: powershell -File D:\source\test\consume.ps1 -Id "{{ GITHUB_JOB }}"
+        run: powershell -File D:\source\test\consume.ps1 -Id "${{ GITHUB_JOB }}"
