@@ -10,9 +10,11 @@ jobs:
     steps:
       - id: publish_output
         run: echo "::set-output name=matrix::$(powershell -File D:\source\test\publish.ps1)"
+      - id: show_result
+        run: echo  ${{ steps.publish_output.outputs.matrix }}
 
     outputs:
-      matrix: ${{ steps.publish_outpu.outputs.matrix }}
+      matrix: ${{ steps.publish_output.outputs.matrix }}
       
   consume:
     needs: publish
