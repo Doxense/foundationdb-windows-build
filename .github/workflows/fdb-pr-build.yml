@@ -23,7 +23,7 @@ jobs:
         shell: cmd
         run : |
           cd .\build
-          powershell.exe -File D:\ci\pr-builder\fdb_pr_builder.ps1 -RunId ${{github.run_id}} -SlackPath "${{ secrets.FDB_GITHUB_TOKEN }}"
+          powershell.exe -File D:\ci\pr-builder\fdb_pr_builder.ps1 -RunId ${{github.run_id}} -GitHubToken "${{ secrets.FDB_GITHUB_TOKEN }}"
         
       # Publish build logs
       - uses: actions/upload-artifact@v2
