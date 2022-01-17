@@ -62,7 +62,6 @@ function BuildMainBranch{
     $LogFileName = "fdb-windows-build.$Branch.$(Get-Date -Format "yyyy-MM-dd").log"
     RunPS -Command "Set-Location $SourceDir"
     Run -Command "git switch $Branch"
-    Run -Command "git pull"
     $CommitId = git log --format="%H" -n 1
     $SubCommitId = $CommitId.Substring(0,6)
     TraceLine "Commit id: $CommitId"
@@ -89,13 +88,11 @@ function BuildPRs{
     RunPS -Command "Set-Location $SourceDir"
     try{
         Run -Command "gh pr checkout $($PR.Id)"
-        Run -Command "git pull"
     }
     catch{
         TraceLine "Cannot checkout the pull request #$($PR.Id)"
         return
     }
-    #gh pr checkout $PR.Id
     $CommitId = git log --format="%H" -n 1
     $SubCommitId = $CommitId.Substring(0,6)
     TraceLine "Commit id: $CommitId"
@@ -111,12 +108,12 @@ function BuildPRs{
     $global:LogFile = $global:MainLogFile
 }
 
-function Build{
+function Build {
     RunPS -Command "Remove-Item $SolutionDir -Recurse -Force -Confirm:`$false -ErrorAction Ignore"
     RunPS -Command "New-Item -ItemType ""directory"" -Path $SolutionDir -ErrorAction Ignore"
     RunPS -Command "Set-Location $SolutionDir"
     $global:LogFile = $global:BranchLogFile
-    Run -Command "cmake -G ""Visual Studio 16 2019"" -A x64 -T ClangCL -DBOOST_ROOT=$BuildDir\boost_1_76_0 $SourceDir"
+    Run -Command "cmake -G ""Visual Studio 16 2019"" -A x64 -T ClangCL $SourceDir"
     Run -Command "msbuild /p:CL_MPCount=32 /p:UseMultiToolTask=true /p:Configuration=Release foundationdb.sln"
 }
 
@@ -141,17 +138,8 @@ RunPS -Command "Set-Location $BuildDir"
 RunPS -Command "Remove-Item $global:LogDir -Recurse -Force -Confirm:`$false -ErrorAction Ignore"
 RunPS -Command "New-Item -ItemType ""directory"" -Path $global:LogDir -ErrorAction Ignore"
 
-# Download boost
-RunPS -Command "Set-Location $BuildDir"
-RunPS -Command "Invoke-WebRequest ""https://boostorg.jfrog.io/ui/api/v1/download?repoKey=main&path=release%252F1.76.0%252Fsource%252Fboost_1_76_0.7z"" -OutFile $BuildDir\boost_1_76_0.7z"
-If ((Get-FileHash $BuildDir\boost_1_76_0.7z).Hash -ne "88782714F8701B6965F3FCE087A66A1262601DD5CCD5B2E5305021BEB53042A1") {
-    Write-Output "boost hash does not match the expected value!"
-    exit 1
-}
-Run -Command "7z x -y $BuildDir\boost_1_76_0.7z"
-
 # Build main branches
-BuildMainBranch -Branch master
+BuildMainBranch -Branch main
 BuildMainBranch -Branch release-7.0
 BuildMainBranch -Branch release-6.3
 
@@ -161,8 +149,9 @@ RunPS -Command "Remove-Item $global:SourceDir -Recurse -Force -Confirm:`$false -
 Run -Command "git clone $FDBRepos"
 RunPS -Command "Set-Location $SourceDir"
 
+$DateLimite = (get-date).AddDays(-1).ToString("yyyy-MM-dd")
 $PullRequests = New-Object Collections.Generic.List[PullRequest]
-$PRsList = (gh pr list -s open --limit 1000)
+$PRsList = (gh pr list -s open -S "updated:>$DateLimit")
 foreach($PR in $PRsList){
     $SplittedPR = ConvertFrom-String $PR -Delimiter "`t"
     $PRObj = [PullRequest]::new()
