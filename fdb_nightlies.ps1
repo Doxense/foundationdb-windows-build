@@ -143,54 +143,10 @@ BuildMainBranch -Branch main
 BuildMainBranch -Branch release-7.0
 BuildMainBranch -Branch release-6.3
 
-# Build pull requests
-RunPS -Command "Set-Location $global:BuildDir"
-RunPS -Command "Remove-Item $global:SourceDir -Recurse -Force -Confirm:`$false -ErrorAction Ignore"
-Run -Command "git clone $FDBRepos"
-RunPS -Command "Set-Location $SourceDir"
-
-$DateLimite = (get-date).AddDays(-1).ToString("yyyy-MM-dd")
-$PullRequests = New-Object Collections.Generic.List[PullRequest]
-$PRsList = (gh pr list -s open -S "updated:>$DateLimit")
-foreach($PR in $PRsList){
-    $SplittedPR = ConvertFrom-String $PR -Delimiter "`t"
-    $PRObj = [PullRequest]::new()
-    $PRObj.Id = $SplittedPR.P1
-    $PRObj.Title = $SplittedPR.P2
-    if($PRObj.Title.Length -gt 36){
-        $Subtitle = $PRObj.Title.Substring(0, 32).Trim()
-        $PRObj.Title = "$Subtitle ..."
-    }
-    $PullRequests.Add($PRObj)
-}
-
-$RecentPRs = New-Object Collections.Generic.List[PullRequest]
-foreach($PR in $PullRequests) {
-    Run -Command "gh pr checkout $($PR.Id)" -SkipErrors
-    $LastModified = git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S
-    $CurrentTime = (Get-Date).ToString("yyyy-MM-ddThh:mm:ss")
-    if((New-TimeSpan -Start $LastModified -End $CurrentTime).Days -eq 0){
-        $RecentPRs.Add($PR)
-    }
-}
-TraceLine  "Building the folowing pull requests"
-foreach($PR in $RecentPRs){
-    TraceLine "$($PR.Id): $($PR.Title)"
-}
-
-foreach($PR in $RecentPRs){
-    BuildPRs $PR
-}
-
-if($global:PRsSlackText.Length -eq 0){
-    $global:PRsSlackText = "\u2714   No new pull request to build"
-}
-
 $SlackMessageTemplate = "$BuildDir\sources\skack_message_template.json"
 $SlackMessage = Get-Content $SlackMessageTemplate
-$global:MainSlackText = $global:MainSlackText -replace "master", "master       "
+$global:MainSlackText = $global:MainSlackText -replace "main", "main         "
 $SlackMessage = $SlackMessage -replace "main-text", $global:MainSlackText
-$SlackMessage = $SlackMessage -replace "pr-text", $global:PRsSlackText
 $SlackMessage = $SlackMessage -replace "log-text", "Build logs available <$global:LogPath|here> for 90 days"
 TraceLine [string]$SlackMessage
 
