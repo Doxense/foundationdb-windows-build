@@ -142,10 +142,10 @@ RunPS -Command "New-Item -ItemType ""directory"" -Path $global:LogDir -ErrorActi
 BuildMainBranch -Branch main
 BuildMainBranch -Branch release-7.0
 BuildMainBranch -Branch release-6.3
+BuildMainBranch -Branch partitioned-txns
 
 $SlackMessageTemplate = "$BuildDir\sources\skack_message_template.json"
 $SlackMessage = Get-Content $SlackMessageTemplate
-$global:MainSlackText = $global:MainSlackText -replace "main", "main         "
 $SlackMessage = $SlackMessage -replace "main-text", $global:MainSlackText
 $SlackMessage = $SlackMessage -replace "log-text", "Build logs available <$global:LogPath|here> for 90 days"
 TraceLine [string]$SlackMessage
